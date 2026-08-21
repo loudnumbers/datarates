@@ -2,7 +2,7 @@
 
 A small web tool for turning rates into MIDI.
 
-Lives at **datarates.loudnumbers.net**.
+Lives at **<https://datarates.loudnumbers.net>**.
 
 You give it one or more rates — "42 beats per minute", "0.7 Hz", "one every 4.3
 seconds" — plus a track length and a MIDI note for each rate. It writes a MIDI
@@ -39,8 +39,8 @@ and hands you a file you can drop straight onto a timeline.
 ## What it does
 
 1. You set up a **track**: a length in seconds and a tempo in BPM.
-2. You add one or more **rates**. Each rate has a speed, a MIDI note, an offset
-   and a few other properties.
+2. You add one or more **rates**. Each rate has a rate value, a MIDI note, an
+   offset and a few other properties.
 3. The app computes when every pulse falls, in seconds, across the track.
 4. It writes a standard MIDI file and offers it as a download.
 
@@ -64,8 +64,8 @@ There is no server: everything happens in the browser and nothing is uploaded to
 | Setting | Unit | Default | Notes |
 |---|---|---|---|
 | Name | text | `Rate 1` | Becomes the MIDI track name. |
-| Speed | number | — | Interpreted according to the unit below. |
-| Unit | BPM / Hz / seconds | `BPM` | See conversion table. |
+| Rate | number | — | Interpreted according to the unit below. Stored as `speed` in the config, so older shared URLs keep working. |
+| Unit | BPM / Hz / seconds apart | `BPM` | See conversion table. |
 | Note | note name | `C3` | e.g. `C3`, `F#4`, `Bb2`. One note per rate. |
 | Channel | 1–16 | next free | Defaults to 1, 2, 3… but is editable, so several rates can share an instrument. |
 | Offset | seconds | `0` | Shifts the whole rate later in time. |
@@ -81,7 +81,7 @@ consecutive pulses — before anything else happens.
 |---|---|
 | BPM (beats per minute) | `60 / speed` |
 | Hz (pulses per second) | `1 / speed` |
-| Seconds between pulses | `speed` |
+| Seconds apart | `speed` |
 
 So 120 BPM, 2 Hz and 0.5 seconds are three ways of writing the same rate.
 
@@ -180,9 +180,10 @@ tick before the next begins, so the file never contains a stuck note.
 A play/stop control auditions the arrangement through the Web Audio API before
 you commit to a download.
 
-- Each pulse is a short synthesised blip: a triangle oscillator with a
-  fast attack and short decay, pitched to the rate's MIDI note using
-  `440 * 2 ** ((note - 69) / 12)`.
+- Each pulse is a triangle oscillator with a 5ms attack decaying to silence
+  over the note's own length (floored at 30ms, capped at 1.2s), pitched using
+  `440 * 2 ** ((note - 69) / 12)`. Short notes read as blips; long ones ring,
+  so the preview reflects the note lengths the file actually contains.
 - Events are scheduled ahead against `AudioContext.currentTime` in a rolling
   lookahead window, so timing is sample-accurate and unaffected by page jank.
 - Playback runs once through the track length and stops. A playhead crosses the
@@ -218,7 +219,7 @@ There is no localStorage, no account, no analytics and no server.
 
 A 30-second track at 120 BPM, velocity 100, with two rates:
 
-| Name | Speed | Unit | Note | Channel | Offset | Note length |
+| Name | Rate | Unit | Note | Channel | Offset | Note length |
 |---|---|---|---|---|---|---|
 | Births | 4.3 | seconds | C3 | 1 | 0 | auto |
 | Orbits | 92 | BPM | G4 | 2 | 1.5 | auto |
@@ -240,27 +241,42 @@ The exported file has three tracks — a conductor track, "Births" on channel 1,
 A single page, no routing, no modals.
 
 ```
-┌─────────────────────────────────────────────────────┐
-│  datarates                                          │
-│  Turn rates into MIDI.                              │
-├─────────────────────────────────────────────────────┤
-│  TRACK                                              │
-│  Length [ 60 ] s   Tempo [ 120 ] BPM                │
-│  Time sig [ 4/4 ]  Velocity [ 100 ]                 │
-├─────────────────────────────────────────────────────┤
-│  RATES                                              │
-│  ┌───────────────────────────────────────────────┐  │
-│  │ ☑ [Births    ] [4.3][seconds ▾]  = every 4.3s │  │
-│  │   Note [C3] (60)  Ch [1]                      │  │
-│  │   Offset [0] s    Length [auto] s     7 notes │  │
-│  │                                            ✕  │  │
-│  └───────────────────────────────────────────────┘  │
-│  [ + Add rate ]                                     │
-├─────────────────────────────────────────────────────┤
-│  [ ▶ Preview ]            [ ↓ Download MIDI ]       │
-│  51 notes across 2 rates · 30.0s                    │
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────┐
+│  datarates                                  LOUD NUMBERS │
+│  Turn rates into MIDI.                                   │
+├──────────────────────────────────────────────────────────┤
+│  TRACK                                                   │
+│  Length [ 30 ] s    Tempo ⓘ [ 120 ] BPM                  │
+│  Time sig [ 4/4 ]   Velocity [ 100 ]                     │
+├──────────────────────────────────────────────────────────┤
+│  RATES                                                   │
+│  ┌────────────────────────────────────────────────────┐  │
+│  │ ☑ [Births      ]  = every 4.3s · 7 notes    Remove │  │
+│  │ Rate  Unit ⓘ   Note   Channel  Offset ⓘ  Length ⓘ │  │
+│  │ [4.3] [sec ▾]  [C3]   [1]      [0]       [auto]   │  │
+│  │                 = 60           seconds   auto·2.15s│  │
+│  └────────────────────────────────────────────────────┘  │
+│  [ + Add rate ]                                          │
+├──────────────────────────────────────────────────────────┤
+│  [ ▶ Preview ]            [ ↓ Download MIDI ]            │
+│  ▏▊▁▁▁▊▁▁▁▊▁▁▁▊▁▁▁▊▁▁▁▊▁▁▁▊▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁▁  │
+│  ▏▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎▎  │
+│  0.0 / 30.0s                                             │
+│  51 notes across 2 rates · 30.0s                         │
+└──────────────────────────────────────────────────────────┘
 ```
+
+The wordmark sits top right, on the same line as the title and tagline.
+
+Fields whose behaviour isn't obvious carry an **ⓘ** — Tempo, Unit, Offset and
+Note length. Each opens a small panel on click or Enter, closes on Escape or an
+outside click, and works on touch. They're disclosure buttons rather than
+`title` attributes, which don't appear on phones at all.
+
+Below the transport sits the **timeline**: one lane per playable rate, first
+rate on top, every pulse drawn in faded pink across the width of the track. It
+is always visible, so you can read the polyrhythm and check offsets before
+pressing play. The playhead crosses it during playback.
 
 Principles:
 
@@ -268,7 +284,7 @@ Principles:
   count for each rate update as you type. No "calculate" button.
 - **Nothing is destructive without recovery.** Deleting a rate offers an undo;
   the URL hash means a reload never loses work.
-- **Invalid input is explained inline**, not rejected silently. A speed of `0`,
+- **Invalid input is explained inline**, not rejected silently. A rate of `0`,
   an unparseable note name or a channel outside 1–16 marks the field and
   disables export with a reason.
 - **Responsive down to phone width.** Rate rows stack rather than scroll
@@ -402,7 +418,7 @@ directory — what's in the repo is what gets served.
   20 Hz over an hour is 72,000. Above 10,000 notes on a single rate the app
   warns before exporting; above 100,000 total it refuses, since the file would
   be unusable in most DAWs.
-- **Speeds** must be positive and non-zero. `0 BPM` and `0 Hz` are rejected with
+- **Rates** must be positive and non-zero. `0 BPM` and `0 Hz` are rejected with
   an inline message rather than producing an infinite interval.
 - **An offset beyond the track length** produces a rate with no pulses. This is
   allowed and flagged in the row's note count ("0 notes"), not treated as an
@@ -433,6 +449,9 @@ use:
 - **Multiple notes per rate.** Each rate plays a single note. Chords, or
   cycling through a list of notes on successive pulses, are the obvious next
   feature if the tool proves useful.
+- **Timeline lane labels.** The timeline has none — lane order is the only
+  mapping back to the rate rows above it. Fine for two or three rates, possibly
+  not for sixteen.
 - **Vendored library fallback.** If the hand-rolled MIDI writer turns out to
   have compatibility problems in a DAW we care about, the fallback is to vendor
   a copy of `@tonejs/midi`'s UMD build into `js/vendor/` — still no build step,

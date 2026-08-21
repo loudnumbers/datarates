@@ -333,9 +333,13 @@ The 4px scale does all the work:
 | 48px | `--sp-12` | Header to first section |
 
 **Sections are separated by space, or by a `--c-divider` rule when space alone
-isn't enough.** Not by cards, panels, shadows or coloured boxes. A rate row may
-take a `--c-fill-subtle` background to group its fields — that is the only
-permitted surface tint.
+isn't enough.** Not by cards, panels, shadows or coloured boxes.
+
+`--c-fill-subtle` is the only surface tint, and it appears in exactly two
+places: behind a rate row to group its fields, and as the lane background on
+the timeline. The tooltip panel is the one element that sits on `--c-bg` with a
+border around it, because it has to read as separate from whatever is beneath
+it. Nothing else gets a background.
 
 ### Responsive
 
@@ -366,6 +370,9 @@ Everything below is flat: a background, a 1px border, no shadow.
 - **Active:** darkens a further ~8%. No transform.
 - **Disabled:** `--c-ink-muted` text on `--c-fill-subtle`, `cursor:
   not-allowed`, and always accompanied by visible text explaining why.
+- **The transport button carries both shapes** — a play triangle and a stop
+  square — in one SVG, swapped by an `is-playing` class. The glyph and the
+  label always agree: triangle with "Preview", square with "Stop".
 
 ### Inputs and selects
 
@@ -502,10 +509,11 @@ carries blue text, still never becomes a word. The logo inverts to cream via
 Stated plainly so nobody adds them by reflex:
 
 - No monospace font, anywhere. `tabular-nums` covers it.
-- No icon set. Text labels. The one exception is a play/stop glyph as inline
-  SVG.
+- No icon set. Text labels. Two exceptions, both inline SVG or a single
+  character: the play/stop glyph on the transport button, and the (i) marker.
 - No box-shadows, gradients, or background images.
-- No cards. No modals. No tooltips. No toasts.
+- No cards. No modals. No toasts. No hover-only tooltips — the (i) popovers are
+  click-and-Escape disclosures, which is what makes them work on touch.
 - No CSS framework, no reset beyond a short `box-sizing` and margin normaliser.
 - No colours beyond the three brand colours, their mixes with each other, and
   the single error red.
