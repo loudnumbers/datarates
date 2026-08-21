@@ -1,0 +1,10 @@
+# macOS
+.DS_Store
+
+# Dropbox sync artefacts
+*.nosync
+.AU.*
+
+# Font downloads — only the three built woff2 files belong in the repo
+fonts/*.zip
+fonts/Roboto/

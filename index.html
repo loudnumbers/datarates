@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>datarates — turn rates into MIDI</title>
+<meta name="description" content="Turn rates in BPM, Hz or seconds into a MIDI file of any length. A data sonification tool from Loud Numbers.">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<div class="page">
+
+  <header class="masthead">
+    <a class="logo" href="https://loudnumbers.net" aria-label="Loud Numbers">
+      <span class="logo__mark" role="img" aria-label="Loud Numbers"></span>
+    </a>
+    <h1>datarates</h1>
+    <p class="tagline">Turn rates into MIDI.</p>
+  </header>
+
+  <main id="main">
+
+    <section class="section" aria-labelledby="h-track">
+      <h2 id="h-track">Track</h2>
+      <div class="field-row">
+        <div class="field field--sm field--fixed">
+          <label for="track-length">Length</label>
+          <input id="track-length" class="numeric" type="number" inputmode="decimal"
+                 min="0.1" max="3600" step="0.1" value="60" data-track="length">
+          <p class="hint">seconds</p>
+        </div>
+        <div class="field field--sm field--fixed">
+          <label for="track-tempo">Tempo</label>
+          <input id="track-tempo" class="numeric" type="number" inputmode="decimal"
+                 min="1" max="999" step="0.01" value="120" data-track="tempo">
+          <p class="hint">BPM</p>
+        </div>
+        <div class="field field--sm field--fixed">
+          <label for="track-timesig">Time signature</label>
+          <select id="track-timesig" data-track="timeSignature">
+            <option value="4/4">4/4</option>
+            <option value="3/4">3/4</option>
+            <option value="5/4">5/4</option>
+            <option value="6/8">6/8</option>
+            <option value="7/8">7/8</option>
+          </select>
+          <p class="hint">for the DAW grid</p>
+        </div>
+        <div class="field field--sm field--fixed">
+          <label for="track-velocity">Velocity</label>
+          <input id="track-velocity" class="numeric" type="number" inputmode="numeric"
+                 min="1" max="127" step="1" value="100" data-track="velocity">
+          <p class="hint">all notes</p>
+        </div>
+      </div>
+      <p class="hint hint--block">
+        Tempo sets the DAW’s bars-and-beats ruler. It does not move the pulses —
+        those are placed at their true position in seconds.
+      </p>
+    </section>
+
+    <section class="section" aria-labelledby="h-rates">
+      <h2 id="h-rates">Rates</h2>
+      <ul class="rates" id="rates"></ul>
+      <div class="rates-actions">
+        <button type="button" class="btn btn--secondary" id="add-rate">+ Add rate</button>
+        <button type="button" class="btn btn--quiet" id="undo-remove" hidden>Undo remove</button>
+      </div>
+    </section>
+
+    <section class="section section--actions" aria-labelledby="h-export">
+      <h2 id="h-export" class="visually-hidden">Preview and export</h2>
+
+      <div class="transport">
+        <button type="button" class="btn btn--secondary" id="preview" aria-describedby="summary">
+          <svg class="glyph" viewBox="0 0 10 12" aria-hidden="true" focusable="false">
+            <polygon points="0,0 10,6 0,12"></polygon>
+          </svg>
+          <span id="preview-label">Preview</span>
+        </button>
+        <button type="button" class="btn btn--primary" id="download">↓ Download MIDI</button>
+      </div>
+
+      <div class="playbar" id="playbar" hidden role="group" aria-label="Playback position">
+        <div class="playbar__track">
+          <div class="playbar__head" id="playhead"></div>
+        </div>
+        <p class="playbar__clock numeric" id="clock" aria-live="off">0.0 / 60.0s</p>
+      </div>
+
+      <p class="summary numeric" id="summary" role="status"></p>
+      <p class="error-block" id="export-error" role="alert" hidden></p>
+    </section>
+
+  </main>
+
+  <footer class="colophon">
+    <p>
+      A <a href="https://loudnumbers.net">Loud Numbers</a> tool.
+      Everything runs in your browser — nothing is uploaded.
+      The address bar holds your settings, so bookmark it to save.
+    </p>
+  </footer>
+
+</div>
+
+<template id="rate-template">
+  <li class="rate">
+    <div class="rate__head">
+      <label class="toggle">
+        <input type="checkbox" data-f="enabled" checked>
+        <span class="visually-hidden">Enabled</span>
+      </label>
+      <input class="rate__name" type="text" data-f="name" aria-label="Rate name" maxlength="40">
+      <p class="rate__interval numeric" data-out="interval"></p>
+      <p class="rate__count numeric" data-out="count"></p>
+      <button type="button" class="btn btn--quiet rate__remove" data-act="remove">Remove</button>
+    </div>
+
+    <div class="field-row">
+      <div class="field field--xs">
+        <label data-lbl="speed">Speed</label>
+        <input class="numeric" type="number" inputmode="decimal" step="any" min="0" data-f="speed">
+      </div>
+      <div class="field field--sm">
+        <label data-lbl="unit">Unit</label>
+        <select data-f="unit">
+          <option value="bpm">BPM</option>
+          <option value="hz">Hz</option>
+          <option value="sec">Seconds apart</option>
+        </select>
+      </div>
+      <div class="field field--xs">
+        <label data-lbl="note">Note</label>
+        <input type="text" data-f="note" autocapitalize="characters" spellcheck="false" maxlength="5">
+        <p class="hint numeric" data-out="noteNum"></p>
+      </div>
+      <div class="field field--xxs">
+        <label data-lbl="channel">Channel</label>
+        <input class="numeric" type="number" inputmode="numeric" min="1" max="16" step="1" data-f="channel">
+      </div>
+      <div class="field field--xs">
+        <label data-lbl="offset">Offset</label>
+        <input class="numeric" type="number" inputmode="decimal" step="any" data-f="offset">
+        <p class="hint">seconds</p>
+      </div>
+      <div class="field field--xs">
+        <label data-lbl="length">Note length</label>
+        <input class="numeric" type="text" inputmode="decimal" data-f="length" placeholder="auto">
+        <p class="hint numeric" data-out="lengthOut"></p>
+      </div>
+    </div>
+
+    <p class="field-error" data-out="error" hidden></p>
+  </li>
+</template>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
