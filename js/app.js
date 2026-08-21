@@ -224,6 +224,7 @@ const preview = new Preview({
 
 function setPreviewLabel(playing) {
   el.previewLabel.textContent = playing ? 'Stop' : 'Preview';
+  el.preview.classList.toggle('is-playing', playing);
   el.playbar.hidden = !playing;          // no stray rule when idle
 }
 

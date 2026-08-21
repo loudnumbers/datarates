@@ -340,7 +340,10 @@ select[aria-invalid="true"] {
   color: var(--c-ink-muted);
   cursor: not-allowed;
 }
-.glyph { width: 0.6em; height: 0.75em; fill: currentColor; }
+.glyph { width: 0.7em; height: 0.7em; fill: currentColor; }
+.glyph__stop { display: none; }
+.is-playing .glyph__play { display: none; }
+.is-playing .glyph__stop { display: block; }
 
 /* ---------------------------------------------------------------- rates -- */
 .rates { display: flex; flex-direction: column; gap: var(--sp-4); }
