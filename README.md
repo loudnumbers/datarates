@@ -185,8 +185,8 @@ you commit to a download.
   `440 * 2 ** ((note - 69) / 12)`.
 - Events are scheduled ahead against `AudioContext.currentTime` in a rolling
   lookahead window, so timing is sample-accurate and unaffected by page jank.
-- Playback runs once through the track length and stops. A playhead time
-  readout shows progress.
+- Playback runs once through the track length and stops. A playhead crosses the
+  timeline and a clock readout shows progress.
 - The preview is an approximation for auditioning polyrhythms — it is not
   trying to sound like your instruments. The MIDI file is the deliverable.
 
@@ -319,7 +319,9 @@ datarates/
 │   ├── notes.js        Note name ↔ MIDI number conversion
 │   ├── schedule.js     Rates → list of pulses in seconds
 │   ├── midi.js         Pulses → Standard MIDI File bytes
-│   └── preview.js      Web Audio playback
+│   ├── preview.js      Web Audio playback
+│   ├── timeline.js     Pulses → the canvas timeline
+│   └── tooltip.js      The (i) disclosure popovers
 ├── tools/
 │   ├── test.mjs        Arithmetic and MIDI-byte tests
 │   ├── test.sh         Test runner

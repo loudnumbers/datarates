@@ -88,9 +88,11 @@
         <button type="button" class="btn btn--primary" id="download">↓ Download MIDI</button>
       </div>
 
-      <div class="playbar" id="playbar" hidden role="group" aria-label="Playback position">
+      <div class="playbar" id="playbar">
         <div class="playbar__track">
-          <div class="playbar__head" id="playhead"></div>
+          <canvas class="playbar__canvas" id="timeline" role="img"
+                  aria-label="Timeline"></canvas>
+          <div class="playbar__head" id="playhead" hidden></div>
         </div>
         <p class="playbar__clock numeric" id="clock" aria-live="off">0.0 / 60.0s</p>
       </div>

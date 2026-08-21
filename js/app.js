@@ -7,6 +7,7 @@ import { parseNote } from './notes.js';
 import { readHash, writeHash } from './url.js';
 import { Preview } from './preview.js';
 import { initTooltips, closeTooltip } from './tooltip.js';
+import { drawTimeline } from './timeline.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -23,6 +24,7 @@ const el = {
   previewLabel: $('#preview-label'),
   download: $('#download'),
   playbar: $('#playbar'),
+  timeline: $('#timeline'),
   playhead: $('#playhead'),
   clock: $('#clock'),
   summary: $('#summary'),
@@ -150,7 +152,8 @@ function refresh() {
     ...warnings(schedule),
   ].join(' · ');
 
-  el.clock.textContent = `0.0 / ${config.length.toFixed(1)}s`;
+  if (!preview.playing) el.clock.textContent = `0.0 / ${config.length.toFixed(1)}s`;
+  drawTimeline(el.timeline, schedule);
   writeHash(config);
 }
 
@@ -225,7 +228,7 @@ const preview = new Preview({
 function setPreviewLabel(playing) {
   el.previewLabel.textContent = playing ? 'Stop' : 'Preview';
   el.preview.classList.toggle('is-playing', playing);
-  el.playbar.hidden = !playing;          // no stray rule when idle
+  el.playhead.hidden = !playing;
 }
 
 function stopPreview() {
@@ -241,6 +244,14 @@ el.preview.addEventListener('click', () => {
 });
 
 window.addEventListener('pagehide', () => preview.stop());
+
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => drawTimeline(el.timeline, buildSchedule(config)), 100);
+});
+window.matchMedia('(prefers-color-scheme: dark)')
+  .addEventListener('change', () => drawTimeline(el.timeline, buildSchedule(config)));
 
 initTooltips();
 renderRates();

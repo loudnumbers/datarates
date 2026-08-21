@@ -415,11 +415,30 @@ Invalid fields get a 2px `--c-error` border and a message below in `--fs-xs`
 `aria-invalid`. The message says what's wrong and what to do: *"Speed must be
 greater than 0."*
 
+### The timeline
+
+A canvas below the transport, always visible, showing where every pulse falls
+across the track. One lane per playable rate in source order, so the first rate
+is the top lane and the row order above is the legend.
+
+- Lane height 14px, 3px apart. The canvas grows with the number of rates rather
+  than squeezing them; 16 rates is 269px.
+- Lanes are filled `--c-fill-subtle`; pulses are `--c-accent` at 45% alpha.
+  Each pulse spans its note length, so duty cycle reads as well as placement.
+- Colours are read from the custom properties at draw time and redrawn on a
+  `prefers-color-scheme` change, so the canvas follows the theme.
+- Canvas, not DOM nodes: a fast rate can put tens of thousands of pulses on
+  screen. 12,000 draw in about 5ms; 12,000 elements would not.
+- Dense rates merge into a solid band. That is honest — it looks dense because
+  it is.
+
 ### The playhead
 
-The one place pink does structural work: a 2px vertical pink rule moving across
-the timeline during preview. Non-text, decorative, and paired with a numeric
-clock readout so the information isn't colour-only.
+The one place pink does structural work at full strength: a 2px vertical pink
+rule crossing the timeline during playback, over the faded pulses. It is a
+separate DOM element on top of the canvas, so playback never redraws the
+pulses. Hidden when stopped, and paired with a numeric clock so the information
+is never colour-only.
 
 ---
 
