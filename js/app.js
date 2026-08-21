@@ -6,6 +6,7 @@ import { writeMidi, filenameFor, download } from './midi.js';
 import { parseNote } from './notes.js';
 import { readHash, writeHash } from './url.js';
 import { Preview } from './preview.js';
+import { initTooltips, closeTooltip } from './tooltip.js';
 
 const $ = (sel, root = document) => root.querySelector(sel);
 const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
@@ -45,6 +46,7 @@ const plural = (n, word) => `${n.toLocaleString()} ${word}${n === 1 ? '' : 's'}`
 /* --------------------------------------------------------------- rows -- */
 
 function renderRates() {
+  closeTooltip();          // rows are about to be replaced
   el.rates.textContent = '';
 
   config.rates.forEach((rate, i) => {
@@ -239,4 +241,5 @@ el.preview.addEventListener('click', () => {
 
 window.addEventListener('pagehide', () => preview.stop());
 
+initTooltips();
 renderRates();

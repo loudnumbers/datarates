@@ -36,7 +36,11 @@
           <p class="hint">seconds</p>
         </div>
         <div class="field field--sm field--fixed">
-          <label for="track-tempo">Tempo</label>
+          <div class="field__label">
+            <label for="track-tempo">Tempo</label>
+            <button type="button" class="info" data-tip="tempo"
+                    aria-expanded="false" aria-label="About tempo">i</button>
+          </div>
           <input id="track-tempo" class="numeric" type="number" inputmode="decimal"
                  min="1" max="999" step="0.01" value="120" data-track="tempo">
           <p class="hint">BPM</p>
@@ -59,10 +63,6 @@
           <p class="hint">all notes</p>
         </div>
       </div>
-      <p class="hint hint--block">
-        Tempo sets the DAW’s bars-and-beats ruler. It does not move the pulses —
-        those are placed at their true position in seconds.
-      </p>
     </section>
 
     <section class="section" aria-labelledby="h-rates">
@@ -129,7 +129,11 @@
         <input class="numeric" type="number" inputmode="decimal" step="any" min="0" data-f="speed">
       </div>
       <div class="field field--sm">
-        <label data-lbl="unit">Unit</label>
+        <div class="field__label">
+          <label data-lbl="unit">Unit</label>
+          <button type="button" class="info" data-tip="unit"
+                  aria-expanded="false" aria-label="About unit">i</button>
+        </div>
         <select data-f="unit">
           <option value="bpm">BPM</option>
           <option value="hz">Hz</option>
@@ -146,12 +150,20 @@
         <input class="numeric" type="number" inputmode="numeric" min="1" max="16" step="1" data-f="channel">
       </div>
       <div class="field field--xs">
-        <label data-lbl="offset">Offset</label>
+        <div class="field__label">
+          <label data-lbl="offset">Offset</label>
+          <button type="button" class="info" data-tip="offset"
+                  aria-expanded="false" aria-label="About offset">i</button>
+        </div>
         <input class="numeric" type="number" inputmode="decimal" step="any" data-f="offset">
         <p class="hint">seconds</p>
       </div>
       <div class="field field--xs">
-        <label data-lbl="length">Note length</label>
+        <div class="field__label">
+          <label data-lbl="length">Note length</label>
+          <button type="button" class="info" data-tip="length"
+                  aria-expanded="false" aria-label="About note length">i</button>
+        </div>
         <input class="numeric" type="text" inputmode="decimal" data-f="length" placeholder="auto">
         <p class="hint numeric" data-out="lengthOut"></p>
       </div>

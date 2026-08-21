@@ -389,6 +389,25 @@ Everything below is flat: a background, a 1px border, no shadow.
 Blue, not pink — pink can't reach 3:1 against cream. The ring is never removed
 and never replaced with a colour change alone.
 
+### Info markers
+
+Fields whose behaviour isn't obvious from their label carry a small circular
+(i) button — currently Tempo, Unit, Offset and Note length.
+
+- A real `<button>` with `aria-expanded`, toggling one reusable panel that is
+  inserted directly after it so screen readers reach it in order. Escape or an
+  outside click closes it; Escape returns focus to the button.
+- The circle is **the one exception to the 2px radius rule**: it reads as a
+  glyph, not as a container. Nothing else on the site is round.
+- Visually 18px, but `::after { inset: -10px }` gives it a 38px tap target
+  without disturbing the label's line height.
+- The panel flips to right-aligned when it would otherwise run off the edge of
+  the window.
+
+Prefer an (i) over standing explanatory text when the explanation is longer
+than a few words — the paragraph that used to sit under the Track fields became
+the Tempo tooltip.
+
 ### Validation
 
 Invalid fields get a 2px `--c-error` border and a message below in `--fs-xs`
