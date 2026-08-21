@@ -288,11 +288,12 @@ NUMBERS.
 - **Colour:** rendered in brand blue `#173561` rather than the black of the
   master artwork, so it sits in the palette on cream. Single-colour, `fill:
   currentColor` so it inverts to cream in dark mode without a second file.
-- **Placement:** page header, top-left, above the page title.
+- **Placement:** page header, top-**right**, on the same line as the page
+  title and tagline, which sit left. Vertically centred against them.
 - **Size:** 120px wide on desktop, 96px on mobile. Height follows the aspect
   ratio; never distort it.
-- **Clear space:** at least half the logo's height on every side (`--sp-6` at
-  the default size). Nothing intrudes.
+- **Clear space:** at least half the logo's height on every side (`--sp-8` at
+  the default size — the header's flex gap). Nothing intrudes.
 - **Link:** wraps a link to `https://loudnumbers.net`, with an accessible name
   of "Loud Numbers" (the SVG carries a `<title>`, and the link an `aria-label`).
 

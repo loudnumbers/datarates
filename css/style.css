@@ -134,12 +134,18 @@ a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
   padding: var(--sp-8) var(--sp-6) var(--sp-16);
 }
 
-.masthead { margin-bottom: var(--sp-12); }
+.masthead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-8);             /* clear space: at least half the logo height */
+  margin-bottom: var(--sp-12);
+}
 
 .logo {
-  display: inline-block;
+  display: block;
+  flex: 0 0 auto;
   color: var(--c-ink);          /* logo paths use fill: currentColor */
-  margin-bottom: var(--sp-6);   /* clear space: half the logo height */
   text-decoration: none;
 }
 /* Masked rather than <img>, so the wordmark takes currentColor and inverts
