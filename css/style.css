@@ -1,0 +1,401 @@
+/* datarates — see STYLE.md. Tokens here are copied from that file. */
+
+/* ---------------------------------------------------------------- fonts -- */
+/* Self-hosted so the site stays dependency-free, works offline, and makes no
+   third-party request. Drop the woff2 files into fonts/ — see fonts/README.md.
+   Until then the stack falls back to Helvetica Neue / Arial. */
+@font-face {
+  font-family: Roboto; font-style: normal; font-weight: 400; font-display: swap;
+  src: url("../fonts/roboto-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: Roboto; font-style: normal; font-weight: 500; font-display: swap;
+  src: url("../fonts/roboto-500.woff2") format("woff2");
+}
+@font-face {
+  font-family: Roboto; font-style: normal; font-weight: 700; font-display: swap;
+  src: url("../fonts/roboto-700.woff2") format("woff2");
+}
+
+/* --------------------------------------------------------------- tokens -- */
+:root {
+  --c-cream:         #FFFDF1;
+  --c-blue:          #173561;
+  --c-pink:          #FF7272;
+
+  --c-bg:            var(--c-cream);
+  --c-fill-subtle:   #ECEDE6;
+  --c-ink:           var(--c-blue);
+  --c-ink-muted:     #516785;
+  --c-ink-on-accent: var(--c-blue);
+  --c-accent:        var(--c-pink);
+  --c-accent-hover:  #F55F5F;
+  --c-accent-active: #E24E4E;
+  --c-border:        #74859B;
+  --c-border-strong: var(--c-blue);
+  --c-divider:       #B9C1C6;
+  --c-focus:         var(--c-blue);
+  --c-error:         #A32E2E;
+
+  --font-sans:  Roboto, "Helvetica Neue", Arial, sans-serif;
+  --fw-regular: 400;
+  --fw-medium:  500;
+  --fw-bold:    700;
+
+  --fs-xs:   0.75rem;
+  --fs-sm:   0.875rem;
+  --fs-base: 1rem;
+  --fs-lg:   1.25rem;
+  --fs-xl:   1.75rem;
+
+  --lh-tight: 1.2;
+  --lh-base:  1.5;
+
+  --sp-1:  0.25rem;
+  --sp-2:  0.5rem;
+  --sp-3:  0.75rem;
+  --sp-4:  1rem;
+  --sp-6:  1.5rem;
+  --sp-8:  2rem;
+  --sp-12: 3rem;
+  --sp-16: 4rem;
+
+  --radius:       2px;
+  --border-width: 1px;
+  --control-h:    2.5rem;
+  --measure:      50rem;
+
+  --dur:  120ms;
+  --ease: ease-out;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-bg:            var(--c-blue);
+    --c-fill-subtle:   #334D72;
+    --c-ink:           var(--c-cream);
+    --c-ink-muted:     #B6C2D6;
+    --c-border:        #6B80A3;
+    --c-border-strong: var(--c-cream);
+    --c-divider:       #334D72;
+    --c-focus:         var(--c-cream);
+    --c-error:         #FFB0B0;
+    /* --c-accent and --c-ink-on-accent unchanged: pink fill, blue text. */
+  }
+}
+
+/* ---------------------------------------------------------------- reset -- */
+*, *::before, *::after { box-sizing: border-box; }
+body, h1, h2, p, ul, li, figure { margin: 0; padding: 0; }
+ul { list-style: none; }
+[hidden] { display: none !important; }
+
+body {
+  background: var(--c-bg);
+  color: var(--c-ink);
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-base);
+  -webkit-text-size-adjust: 100%;
+}
+
+.numeric,
+input[type="number"] { font-variant-numeric: tabular-nums; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  clip-path: inset(50%); overflow: hidden; white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute; left: var(--sp-2); top: -4rem;
+  background: var(--c-bg); color: var(--c-ink);
+  padding: var(--sp-2) var(--sp-3);
+  border: var(--border-width) solid var(--c-border-strong);
+  border-radius: var(--radius);
+  font-weight: var(--fw-medium); text-decoration: none;
+  transition: top var(--dur) var(--ease);
+}
+.skip-link:focus { top: var(--sp-2); }
+
+:focus-visible {
+  outline: 3px solid var(--c-focus);
+  outline-offset: 2px;
+}
+
+a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+
+/* --------------------------------------------------------------- layout -- */
+.page {
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: var(--sp-8) var(--sp-6) var(--sp-16);
+}
+
+.masthead { margin-bottom: var(--sp-12); }
+
+.logo {
+  display: inline-block;
+  color: var(--c-ink);          /* logo paths use fill: currentColor */
+  margin-bottom: var(--sp-6);   /* clear space: half the logo height */
+  text-decoration: none;
+}
+/* Masked rather than <img>, so the wordmark takes currentColor and inverts
+   for dark mode from the one SVG file. */
+.logo__mark {
+  display: block;
+  width: 120px;
+  aspect-ratio: 856 / 477;
+  background-color: currentColor;
+  -webkit-mask: url("../assets/loud-numbers-logo.svg") no-repeat center / contain;
+  mask: url("../assets/loud-numbers-logo.svg") no-repeat center / contain;
+}
+
+h1 {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+}
+.tagline { color: var(--c-ink-muted); margin-top: var(--sp-1); }
+
+.section { margin-bottom: var(--sp-8); }
+.section h2 {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-bold);
+  line-height: var(--lh-tight);
+  padding-bottom: var(--sp-2);
+  margin-bottom: var(--sp-4);
+  border-bottom: var(--border-width) solid var(--c-divider);
+}
+
+/* --------------------------------------------------------------- fields -- */
+.field-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+  align-items: flex-start;
+}
+
+.field { display: flex; flex-direction: column; flex: 1 1 8rem; min-width: 0; }
+/* Rate fields share the row rather than wrapping a lone field onto line two. */
+.field--xxs { flex: 0 1 4.5rem; }
+.field--xs  { flex: 1 1 6rem; }
+.field--sm  { flex: 1 1 8rem; }
+.field-row > .field--fixed { flex: 0 1 10rem; }
+
+.field label,
+label[data-lbl] {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
+  margin-bottom: var(--sp-2);
+}
+
+input[type="text"],
+input[type="number"],
+select {
+  width: 100%;
+  height: var(--control-h);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--c-bg);
+  color: var(--c-ink);
+  border: var(--border-width) solid var(--c-border);
+  border-radius: var(--radius);
+  font-family: inherit;
+  font-size: var(--fs-base);
+  transition: border-color var(--dur) var(--ease);
+}
+select {
+  appearance: none;
+  padding-right: var(--sp-6);
+  background-image:
+    linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 1rem top 55%, right 0.7rem top 55%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+input:hover, select:hover { border-color: var(--c-border-strong); }
+
+::placeholder { color: var(--c-ink-muted); opacity: 1; }
+
+.hint {
+  font-size: var(--fs-xs);
+  color: var(--c-ink-muted);
+  margin-top: var(--sp-1);
+}
+.hint--block { margin-top: var(--sp-4); max-width: 38rem; }
+
+.field-error {
+  flex-basis: 100%;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--c-error);
+  margin-top: var(--sp-2);
+}
+/* Needs to out-specify the input[type=...] base rule above. */
+input[aria-invalid="true"],
+select[aria-invalid="true"] {
+  border-width: 2px;
+  border-color: var(--c-error);
+}
+
+/* -------------------------------------------------------------- buttons -- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: var(--control-h);
+  padding: 0 var(--sp-4);
+  border: var(--border-width) solid transparent;
+  border-radius: var(--radius);
+  background: none;
+  color: var(--c-ink);
+  font-family: inherit;
+  font-size: var(--fs-base);
+  font-weight: var(--fw-medium);
+  cursor: pointer;
+  transition: background-color var(--dur) var(--ease),
+              border-color var(--dur) var(--ease);
+}
+.btn--primary {
+  background: var(--c-accent);
+  color: var(--c-ink-on-accent);
+}
+.btn--primary:hover  { background: var(--c-accent-hover); }
+.btn--primary:active { background: var(--c-accent-active); }
+
+.btn--secondary { border-color: var(--c-border-strong); }
+.btn--secondary:hover { background: var(--c-fill-subtle); }
+
+.btn--quiet {
+  color: var(--c-ink-muted);
+  padding: 0 var(--sp-2);
+  font-size: var(--fs-sm);
+}
+.btn--quiet:hover { text-decoration: underline; text-underline-offset: 2px; }
+
+.btn:disabled {
+  background: var(--c-fill-subtle);
+  border-color: transparent;
+  color: var(--c-ink-muted);
+  cursor: not-allowed;
+}
+.glyph { width: 0.6em; height: 0.75em; fill: currentColor; }
+
+/* ---------------------------------------------------------------- rates -- */
+.rates { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+.rate {
+  background: var(--c-fill-subtle);
+  border-radius: var(--radius);
+  padding: var(--sp-4);
+}
+.rate--off { opacity: 0.55; }
+
+.rate__head {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-bottom: var(--sp-4);
+}
+.rate__name {
+  flex: 1 1 10rem;
+  max-width: 16rem;
+  font-weight: var(--fw-medium);
+}
+.rate__interval {
+  flex: 0 0 auto;
+  font-size: var(--fs-sm);
+  color: var(--c-ink-muted);
+}
+.rate__remove { margin-left: auto; }
+.rate__count::before { content: "· "; }
+
+.rate__count {
+  font-size: var(--fs-xs);
+  color: var(--c-ink-muted);
+  white-space: nowrap;
+}
+
+/* The box stays 1.1rem, but the tap area is a full control height. */
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--control-h);
+  min-height: var(--control-h);
+  margin-left: calc(var(--sp-2) * -1);
+  cursor: pointer;
+}
+.toggle input {
+  width: 1.1rem; height: 1.1rem;
+  accent-color: var(--c-accent);
+  cursor: pointer;
+}
+
+.rates-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+}
+
+/* ------------------------------------------------------------- transport -- */
+.section--actions { border-top: var(--border-width) solid var(--c-divider); padding-top: var(--sp-6); }
+.transport { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+
+.playbar { margin-top: var(--sp-4); }
+.playbar__track {
+  position: relative;
+  height: 4px;
+  background: var(--c-divider);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.playbar__head {
+  position: absolute;
+  top: 0; left: 0;
+  width: 2px; height: 100%;
+  background: var(--c-accent);
+  transform: translateX(0);
+}
+.playbar__clock { font-size: var(--fs-xs); color: var(--c-ink-muted); margin-top: var(--sp-1); }
+
+.summary { font-size: var(--fs-sm); color: var(--c-ink-muted); margin-top: var(--sp-4); }
+.error-block {
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-bold);
+  color: var(--c-error);
+  margin-top: var(--sp-2);
+}
+
+.colophon {
+  margin-top: var(--sp-12);
+  padding-top: var(--sp-4);
+  border-top: var(--border-width) solid var(--c-divider);
+  font-size: var(--fs-xs);
+  color: var(--c-ink-muted);
+  max-width: 38rem;
+}
+
+/* ----------------------------------------------------------- responsive -- */
+@media (max-width: 640px) {
+  .page { padding: var(--sp-6) var(--sp-4) var(--sp-12); }
+  .logo__mark { width: 96px; }
+  .field, .field--xxs, .field--xs, .field--sm { flex: 1 1 100%; }
+  .rate__head { flex-wrap: wrap; }
+  .rate__name { max-width: none; }
+  .rate__interval, .rate__count { flex-basis: 100%; order: 3; }
+  .rate__count::before { content: none; }
+  .transport .btn { flex: 1 1 100%; justify-content: center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
